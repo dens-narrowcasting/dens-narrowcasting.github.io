@@ -30,7 +30,7 @@
       position: absolute;
       top: 2.5vh;
       right: 2.5vw;
-      width: 23vw;
+      width: clamp(200px, 23vw, 450px);
       height: auto;
       z-index: 1;
     }
@@ -118,7 +118,7 @@
     <h2>Bus Departures – Automotive Campus</h2>
     <div class="countdown" id="countdown"></div>
     <p class="walk-note">
-      🚶‍♂️ It takes approximately 5 minutes to walk to the bus stop from our building.
+      It takes approximately 5 minutes to walk to the bus stop from our building.
     </p>
     <table class="bus-table" id="bus-table">
       <thead>
@@ -132,7 +132,7 @@
       </tbody>
     </table>
     <p class="disclaimer">
-      ⚠️ Please note: Departure times are based on a static schedule. Due to limitations with live data, actual bus times may vary.
+      Please note: Departure times are based on a static schedule. Due to limitations with live data, actual bus times may vary.
     </p>
   </div>
 
