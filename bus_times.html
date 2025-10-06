@@ -46,14 +46,14 @@
       padding: 2vh 2vw;
       border-radius: 1vw;
       box-shadow: 0 0 2vw rgba(0, 0, 0, 0.4);
-      font-size: 1.1vw;
+      font-size: clamp(14px, 1.1vw, 18px);
     }
 
     .bus-section h2 {
       margin-top: 0;
       color: #fff;
       text-align: center;
-      font-size: 1.5vw;
+      font-size: clamp(18px, 1.5vw, 24px);
     }
 
     .bus-table {
@@ -65,18 +65,21 @@
     }
 
     .bus-table th, .bus-table td {
-      padding: 0.8vh 1vw;
+      padding: 1vh 1vw;
       border: 1px solid rgba(255,255,255,0.2);
       text-align: center;
+      vertical-align: middle;
     }
 
     .bus-table th {
       background-color: #162a4d;
       color: white;
+      font-size: clamp(16px, 1.2vw, 20px);
     }
 
     .bus-table td {
       color: #fff;
+      font-size: clamp(16px, 1.1vw, 20px);
     }
 
     .next {
@@ -87,13 +90,20 @@
     .countdown {
       margin-top: 1vh;
       text-align: center;
-      font-size: 1.2vw;
+      font-size: clamp(16px, 1.2vw, 20px);
       color: #fff;
+    }
+
+    .walk-note {
+      margin-top: 1vh;
+      text-align: center;
+      font-size: clamp(14px, 1vw, 18px);
+      color: #ccc;
     }
 
     .disclaimer {
       margin-top: 2vh;
-      font-size: 1vw;
+      font-size: clamp(14px, 1vw, 18px);
       text-align: center;
       color: #ddd;
       font-style: italic;
@@ -107,6 +117,9 @@
   <div class="bus-section">
     <h2>Bus Departures – Automotive Campus</h2>
     <div class="countdown" id="countdown"></div>
+    <p class="walk-note">
+      🚶‍♂️ It takes approximately 5 minutes to walk to the bus stop from our building.
+    </p>
     <table class="bus-table" id="bus-table">
       <thead>
         <tr>
