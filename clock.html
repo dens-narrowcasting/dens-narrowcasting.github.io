@@ -14,25 +14,24 @@
       color: white;
     }
 
-    .video-bg {
+    /* Background image from your GitHub Pages link */
+    .image-bg {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
+      background-image: url("https://dens-narrowcasting.github.io/Flying%20Camel%20(1).jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
       z-index: -1;
-      pointer-events: none;
-    }
-
-    .video-bg video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      filter: brightness(0.8);
     }
 
     .logo {
       position: absolute;
       top: 20px;
       right: 20px;
-      width: 450px; /* 3x larger than original */
+      width: 450px;
       height: auto;
       z-index: 1;
     }
@@ -60,12 +59,8 @@
   </style>
 </head>
 <body>
-  <!-- DENS video background -->
-  <div class="video-bg">
-    <video autoplay muted loop playsinline>
-      <source src="https://dens-narrowcasting.github.io/Flying%20Camel%20(1).jpg">
-    </video>
-  </div>
+  <!-- Background image -->
+  <div class="image-bg"></div>
 
   <!-- DENS logo in top-right -->
   <img class="logo" src="https://www.dens.one/wp-content/uploads/2024/06/dens-logo-white.svg" alt="DENS Logo">
@@ -161,5 +156,4 @@
     updateWeather();
   </script>
 </body>
-
 </html>
