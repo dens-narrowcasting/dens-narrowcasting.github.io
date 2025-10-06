@@ -14,12 +14,12 @@
       color: white;
     }
 
-    /* Background image from your GitHub Pages link */
+    /* Background image */
     .image-bg {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background-image: url("https://dens-narrowcasting.github.io/dens_powerhub.png");
+      background-image: url("https://dens-narrowcasting.github.io/Flying%20Camel%20(1).jpg");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -27,34 +27,53 @@
       filter: brightness(0.8);
     }
 
+    /* Responsive logo scaling: ~450px at 1080p, doubles at 4K */
     .logo {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 450px;
+      top: 2.5vh;
+      right: 2.5vw;
+      width: 23vw;  /* Scales automatically — 23vw ≈ 450px at 1080p */
       height: auto;
       z-index: 1;
     }
 
+    /* Info box that scales with screen size */
     .info-container {
       position: absolute;
-      bottom: 20px;
-      left: 20px;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 20px 25px;
-      border-radius: 12px;
-      font-size: 1.3em;
+      bottom: 3vh;
+      left: 3vw;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 2.5vh 3vw;
+      border-radius: 1vw;
+      font-size: 1.3vw;  /* scales smoothly with screen size */
       line-height: 1.6em;
+      box-shadow: 0 0 2vw rgba(0, 0, 0, 0.4);
     }
 
     .time {
-      font-size: 2em;
+      font-size: 2.5vw; /* Large clock text */
       font-weight: bold;
     }
 
-    .date, .week, .weather {
-      font-size: 1em;
-      margin-top: 5px;
+    .date {
+      font-size: 1.2vw;
+      margin-top: 0.8vh;
+    }
+
+    .week {
+      font-size: 1.1vw;
+      margin-top: 0.5vh;
+    }
+
+    .weather {
+      font-size: 1.2vw;
+      margin-top: 1vh;
+      line-height: 1.5em;
+    }
+
+    /* Add slight shadow for readability */
+    .time, .date, .week, .weather {
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
     }
   </style>
 </head>
@@ -62,9 +81,10 @@
   <!-- Background image -->
   <div class="image-bg"></div>
 
-  <!-- DENS logo in top-right -->
+  <!-- DENS logo -->
   <img class="logo" src="https://www.dens.one/wp-content/uploads/2024/06/dens-logo-white.svg" alt="DENS Logo">
 
+  <!-- Clock, date, week, weather -->
   <div class="info-container">
     <div class="time" id="time"></div>
     <div class="date" id="date"></div>
@@ -122,7 +142,7 @@
         const weatherText = `${emoji} Helmond: ${description}, ${temp}°C (feels like ${feels}°C), humidity ${humidity}%`;
         document.getElementById('weather').textContent = weatherText;
       } catch (error) {
-        document.getElementById('weather').textContent = "Weather data not available.";
+        document.getElementById('weather').textContent = "🌐 Weather data not available.";
       }
     }
 
@@ -157,4 +177,3 @@
   </script>
 </body>
 </html>
-
