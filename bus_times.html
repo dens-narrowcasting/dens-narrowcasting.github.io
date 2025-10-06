@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bus Departures – Automotive Campus</title>
   <style>
-    body, html {
+    html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
       color: white;
+      font-size: 1.2vw;
     }
 
     .image-bg {
@@ -30,7 +31,7 @@
       position: absolute;
       top: 2.5vh;
       right: 2.5vw;
-      width: clamp(200px, 23vw, 450px);
+      width: 23vw;
       height: auto;
       z-index: 1;
     }
@@ -40,46 +41,45 @@
       top: 28vh;
       left: 50%;
       transform: translateX(-50%);
-      width: 90vw;
-      max-width: 800px;
+      width: min(90vw, 1600px);
       background: rgba(0, 0, 0, 0.55);
       padding: 2vh 2vw;
       border-radius: 1vw;
       box-shadow: 0 0 2vw rgba(0, 0, 0, 0.4);
-      font-size: clamp(14px, 1.1vw, 18px);
     }
 
     .bus-section h2 {
       margin-top: 0;
       color: #fff;
       text-align: center;
-      font-size: clamp(18px, 1.5vw, 24px);
+      font-size: 2vw;
     }
 
     .bus-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 1vh;
+      margin-top: 2vh;
       border-radius: 1vw;
       overflow: hidden;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .bus-table th, .bus-table td {
-      padding: 1vh 1vw;
+      padding: 1.5vh 1vw;
       border: 1px solid rgba(255,255,255,0.2);
       text-align: center;
       vertical-align: middle;
+      font-size: 1.5vw;
     }
 
     .bus-table th {
       background-color: #162a4d;
       color: white;
-      font-size: clamp(16px, 1.2vw, 20px);
     }
 
     .bus-table td {
       color: #fff;
-      font-size: clamp(16px, 1.1vw, 20px);
     }
 
     .next {
@@ -90,20 +90,20 @@
     .countdown {
       margin-top: 1vh;
       text-align: center;
-      font-size: clamp(16px, 1.2vw, 20px);
+      font-size: 1.5vw;
       color: #fff;
     }
 
     .walk-note {
       margin-top: 1vh;
       text-align: center;
-      font-size: clamp(14px, 1vw, 18px);
+      font-size: 1.2vw;
       color: #ccc;
     }
 
     .disclaimer {
       margin-top: 2vh;
-      font-size: clamp(14px, 1vw, 18px);
+      font-size: 1.1vw;
       text-align: center;
       color: #ddd;
       font-style: italic;
