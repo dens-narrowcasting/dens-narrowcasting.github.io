@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Bus Departures – Automotive Campus</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 2em;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #005aa7;
+    }
+
+    .bus-section {
+      max-width: 700px;
+      margin: 2em auto;
+    }
+
+    .bus-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 2em;
+    }
+
+    .bus-table th, .bus-table td {
+      padding: 1em;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    .bus-table th {
+      background-color: #005aa7;
+      color: white;
+    }
+
+    .note {
+      text-align: center;
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Live Bus Departures – Automotive Campus</h1>
+
+  <div class="bus-section">
+    <table class="bus-table" id="bus-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Destination</th>
+          <th>Line</th>
+        </tr>
+      </thead>
+      <tbody id="bus-body">
+        <tr><td colspan="3">Loading departures...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    Powered by <a href="https://publicapi.dev" target="_blank">Transport for NL API</a>. Afternoon departures only.
+  </div>
+
+  <script>
+    async function fetchDepartures() {
+      try {
+        // Step 1: Search for stop ID
+        const searchRes = await fetch('https://publicapi.dev/bus/stops/search?query=Automotive Campus');
+        const stops = await searchRes.json();
+        if (!stops || stops.length === 0) throw new Error("Stop not found");
+
+        const stopId = stops[0].id;
+
+        // Step 2: Fetch live predictions
+        const predRes = await fetch(`https://publicapi.dev/bus/stops/${stopId}/predictions`);
+        const departures = await predRes.json();
+
+        const now = new Date();
+        const busBody = document.getElementById('bus-body');
+        busBody.innerHTML = '';
+
+        const filtered = departures.filter(dep => {
+          const depTime = new Date(dep.expectedDepartureTime);
+          return depTime.getHours() >= 12;
+        });
+
+        if (filtered.length === 0) {
+          busBody.innerHTML = '<tr><td colspan="3">No afternoon departures found.</td></tr>';
+          return;
+        }
+
+        filtered.forEach(dep => {
+          const time = new Date(dep.expectedDepartureTime).toLocaleTimeString('nl-NL', {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          const row = `<tr>
+            <td>${time}</td>
+            <td>${dep.destinationName}</td>
+            <td>${dep.lineName}</td>
+          </tr>`;
+          busBody.innerHTML += row;
+        });
+      } catch (error) {
+        document.getElementById('bus-body').innerHTML = '<tr><td colspan="3">Error loading data.</td></tr>';
+        console.error("Fetch error:", error);
+      }
+    }
+
+    fetchDepartures();
+    setInterval(fetchDepartures, 300000); // Refresh every 5 minutes
+  </script>
+</body>
+</html>
