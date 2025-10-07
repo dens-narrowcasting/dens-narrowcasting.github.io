@@ -121,7 +121,6 @@
       font-style: italic;
     }
 
-    /* Slightly shrink train-section on 1080p screens to give spacing from logo */
     @media (max-width: 1920px) {
       .train-section {
         width: 80vw;
@@ -136,7 +135,6 @@
       .disclaimer { font-size: 1vw; }
     }
 
-    /* Scale down for ultra-wide / 2K+ screens */
     @media (min-width: 2560px) {
       .train-section {
         width: 70vw;
@@ -191,13 +189,19 @@
     for (let hour = 8; hour <= 21; hour++) {
       const h = hour.toString().padStart(2, "0");
       schedule.push({ time: `${h}:16`, destination: "Deurne", platform: "2" });
-      schedule.push({ time: `${h}:46`, destination: "Deurne", platform: "2" });
       schedule.push({ time: `${h}:18`, destination: "Eindhoven (Boxtel)", platform: "1" });
+      schedule.push({ time: `${h}:46`, destination: "Deurne", platform: "2" });
       schedule.push({ time: `${h}:48`, destination: "Eindhoven (Boxtel)", platform: "1" });
     }
 
+    // Sort schedule chronologically
+    schedule.sort((a, b) => {
+      const [ah, am] = a.time.split(":").map(Number);
+      const [bh, bm] = b.time.split(":").map(Number);
+      return ah * 60 + am - (bh * 60 + bm);
+    });
+
     let countdownInterval = null;
-    let currentCountdownTrain = null;
 
     function showUpcomingTrains() {
       if (countdownInterval) {
