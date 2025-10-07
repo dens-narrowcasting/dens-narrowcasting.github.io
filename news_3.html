@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Helmond Company News</title>
+
+  <style>
+    :root {
+      --background-url: url("https://dens-narrowcasting.github.io/swanenberg.png");
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+    }
+
+    .image-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: var(--background-url);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -1;
+      filter: brightness(0.8);
+    }
+
+    .logo {
+      position: absolute;
+      top: 2.5vh;
+      right: 2.5vw;
+      width: 23vw;
+      height: auto;
+      z-index: 1;
+    }
+
+    .news-container {
+      position: absolute;
+      top: 18vh;
+      left: 5vw;
+      right: 5vw;
+      max-width: 2400px;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 5vh 5vw;
+      border-radius: 1vw;
+      font-size: clamp(1rem, 1.4vw, 1.6rem);
+      line-height: 1.7;
+      box-shadow: 0 0 2vw rgba(0,0,0,0.5);
+      z-index: 2;
+    }
+
+    .news-container h1 {
+      margin-top: 0;
+      font-size: clamp(1.5rem, 2.2vw, 2.6rem);
+      font-weight: 700;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.9);
+    }
+
+    @media (max-width: 768px) {
+      .news-container {
+        font-size: clamp(1rem, 3vw, 1.5rem);
+        padding: 4vh 4vw;
+        top: 12vh;
+      }
+      .news-container h1 {
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+      }
+    }
+
+    @media (min-width: 4000px) {
+      .news-container {
+        font-size: 3rem;
+        padding: 7vh 7vw;
+      }
+
+      .news-container h1 {
+        font-size: 4.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="image-bg"></div>
+
+  <img class="logo" src="https://www.dens.one/wp-content/uploads/2024/06/dens-logo-white.svg" alt="DENS Logo">
+
+  <div class="news-container">
+    <h1>🔋⚡Levering van maar liefst 6MWh aan Swanenberg!</h1>
+    <p>We hebben drie mobiele #PowerHubs geleverd aan Swanenberg – elk systeem met een indrukwekkende capaciteit van 2030 kWh, een vermogen van 600 kVA én een geintegreerde DC charger van 300kW.
+
+    Deze mobiele energieoplossingen zijn verbonden met een slim EMS (Energy Management System) dat de energieopslag intelligent aanstuurt en de lokale netbelasting actief ondersteunt. Dankzij de opslag van schone zonne-energie zijn de PowerHubs direct inzetbaar voor het opladen van elektrische vrachtwagens, graafmachines, auto's en andere voertuigen.
+
+    De Powerhubs leveren niet alleen vermogen, maar ook stabiliteit en flexibiliteit aan het grid – een krachtige oplossing voor emissievrij werken op bouwplaatsen, evenementen en andere projecten.
+
+    👉 Meer informatie: dens.one | swanenberg.nu
+
+    #laadinfra #energie #batterijsysteem</p>
+  </div>
+</body>
+</html>
