@@ -94,6 +94,14 @@
       color: #fff;
     }
 
+    .last-bus-warning-row td {
+      text-align: center;
+      font-size: 1.2vw;
+      color: #ff6666;
+      font-weight: bold;
+      background-color: rgba(255, 0, 0, 0.1);
+    }
+
     .walk-note {
       margin-top: 1vh;
       text-align: center;
@@ -173,7 +181,6 @@
       const countdown = document.getElementById("countdown");
       busBody.innerHTML = "";
 
-      // get future buses
       const upcoming = schedule
         .map(entry => {
           const [hour, minute] = entry.time.split(":").map(Number);
@@ -186,29 +193,39 @@
       if (upcoming.length === 0) {
         countdown.textContent = "No more buses for today.";
         clearInterval(countdownInterval);
+        currentCountdownBus = null;
         return;
       }
 
-      // show top 3
       const nextThree = upcoming.slice(0, 3);
+
       nextThree.forEach((bus, i) => {
         const row = document.createElement("tr");
         row.innerHTML = `<td>${bus.time.getHours().toString().padStart(2,"0")}:${bus.time.getMinutes().toString().padStart(2,"0")}</td><td>${bus.destination}</td>`;
         if (i === 0) row.classList.add("next");
         busBody.appendChild(row);
+
+        // Check if this bus is the last for its destination
+        const remainingInDest = upcoming.filter(b => b.destination === bus.destination);
+        if (remainingInDest.length === 1) {
+          const warningRow = document.createElement("tr");
+          warningRow.classList.add("last-bus-warning-row");
+          warningRow.innerHTML = `<td colspan="2">⚠ Last bus to ${bus.destination}!</td>`;
+          busBody.appendChild(warningRow);
+        }
       });
 
+      // Countdown for the very next bus
       const nextBus = nextThree[0];
       const diffMs = nextBus.time - now;
       const diffMin = diffMs / 60000;
 
-      // start countdown only once for the same bus
       if (diffMin <= 15 && diffMin > 0) {
         if (!currentCountdownBus || currentCountdownBus.getTime() !== nextBus.time.getTime()) {
           startCountdown(nextBus.time);
           currentCountdownBus = nextBus.time;
         }
-      } else {
+      } else if (diffMin > 0) {
         if (countdownInterval) {
           clearInterval(countdownInterval);
           countdownInterval = null;
@@ -217,6 +234,8 @@
         const m = nextBus.time.getMinutes().toString().padStart(2, "0");
         countdown.textContent = `Next bus departs at ${h}:${m}`;
         currentCountdownBus = null;
+      } else {
+        countdown.textContent = "The next bus is departing now";
       }
     }
 
@@ -239,11 +258,10 @@
 
         const minutes = Math.floor(diffMs / 60000);
         const seconds = Math.floor((diffMs % 60000) / 1000);
-        countdown.textContent = `The next bus is leaving in ${minutes} min ${seconds.toString().padStart(2, "0")} sec`;
+        countdown.textContent = `The next bus is leaving in ${minutes} min ${seconds.toString().padStart(2,"0")} sec`;
       }, 1000);
     }
 
-    // Refresh bus list every second, but don't restart countdown unnecessarily
     setInterval(showUpcomingBuses, 1000);
     showUpcomingBuses();
   </script>
