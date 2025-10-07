@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DENS Verjaardagen</title>
+  <style>
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      font-family: 'Segoe UI', sans-serif; color: white;
+      background: url("https://dens-narrowcasting.github.io/dens_powerhub.png") no-repeat center center/cover;
+    }
+    .logo {
+      position: absolute; top: 2.5vh; right: 2.5vw;
+      width: 23vw; height: auto; z-index: 1;
+    }
+    .birthday-container {
+      position: absolute; top: 15vh; left: 5vw; right: 5vw;
+      background: rgba(0,0,0,0.55);
+      padding: 3vh 3vw; border-radius: 1vw;
+      font-size: 1.5vw; line-height: 1.6;
+      box-shadow: 0 0 2vw rgba(0,0,0,0.5);
+    }
+    h2 { margin-top: 0; font-size: 2vw; }
+    ul { list-style: none; padding: 0; }
+    li { margin: 0.5em 0; }
+  </style>
+</head>
+<body>
+  <img class="logo" src="https://www.dens.one/wp-content/uploads/2024/06/dens-logo-white.svg" alt="DENS Logo">
+
+  <div class="birthday-container">
+    <h2>🎉 Verjaardagen</h2>
+    <div id="today"><strong>Vandaag:</strong><ul></ul></div>
+    <div id="upcoming"><strong>Komende 7 dagen:</strong><ul></ul></div>
+    <div id="past"><strong>Afgelopen weekend:</strong><ul></ul></div>
+  </div>
+
+  <!-- iCal parser -->
+  <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
+  <script>
+    const icsUrl = "HIER_DE_ICS_FEED_URL"; // <-- ICS-link van Teams/Outlook kalender
+
+    async function loadBirthdays() {
+      try {
+        const res = await fetch(icsUrl);
+        const text = await res.text();
+        const jcalData = ICAL.parse(text);
+        const comp = new ICAL.Component(jcalData);
+        const events = comp.getAllSubcomponents("vevent").map(e => new ICAL.Event(e));
+
+        const now = new Date();
+        const todayStr = now.toISOString().split("T")[0];
+        const todayList = document.querySelector("#today ul");
+        const upcomingList = document.querySelector("#upcoming ul");
+        const pastList = document.querySelector("#past ul");
+
+        events.forEach(ev => {
+          const date = ev.startDate.toJSDate();
+          const dateStr = date.toISOString().split("T")[0];
+          const diffDays = Math.floor((date - now) / (1000*60*60*24));
+
+          // Vandaag jarig
+          if (dateStr === todayStr) {
+            todayList.innerHTML += `<li>${ev.summary}</li>`;
+          }
+          // Komende 7 dagen
+          else if (diffDays > 0 && diffDays <= 7) {
+            upcomingList.innerHTML += `<li>${ev.summary} (${date.toLocaleDateString("nl-NL",{weekday:"long", day:"numeric", month:"long"})})</li>`;
+          }
+          // Afgelopen weekend (alleen tonen op maandag)
+          else if (diffDays < 0 && now.getDay() === 1 && (date.getDay() === 6 || date.getDay() === 0)) {
+            pastList.innerHTML += `<li>${ev.summary} (${date.toLocaleDateString("nl-NL",{weekday:"long", day:"numeric", month:"long"})})</li>`;
+          }
+        });
+
+        // Als er geen verjaardagen zijn
+        if (!todayList.innerHTML) todayList.innerHTML = "<li>Geen jarigen vandaag</li>";
+        if (!upcomingList.innerHTML) upcomingList.innerHTML = "<li>Geen komende verjaardagen</li>";
+        if (!pastList.innerHTML) pastList.innerHTML = "<li>Geen verjaardagen in het weekend</li>";
+
+      } catch (err) {
+        document.querySelector(".birthday-container").innerHTML = "⚠️ Kan verjaardagen niet laden.";
+      }
+    }
+
+    loadBirthdays();
+  </script>
+</body>
+</html>
