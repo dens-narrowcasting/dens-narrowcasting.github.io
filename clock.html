@@ -18,6 +18,7 @@
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
+      background-image: url("https://dens-narrowcasting.github.io/dens_powerhub.png");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -73,7 +74,7 @@
   </style>
 </head>
 <body>
-  <div class="image-bg" id="bg"></div>
+  <div class="image-bg"></div>
   <img class="logo" src="https://www.dens.one/wp-content/uploads/2024/06/dens-logo-white.svg" alt="DENS Logo">
   <div class="info-container">
     <div class="time" id="time"></div>
@@ -170,36 +171,10 @@
       return map[code] || { description: "Unknown weather", emoji: "❔" };
     }
 
-    const backgrounds = [
-      "https://dens-narrowcasting.github.io/dens_powerhub.png",
-      "https://dens-narrowcasting.github.io/extra%20edit%20hoge%20resolutie%20-%20dens%20logo-01.jpg",
-      "https://dens-narrowcasting.github.io/Ruben-zoon%20Media%20(12).jpeg"
-    ];
-
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
-
-    let shuffledBackgrounds = shuffle([...backgrounds]);
-    let currentBgIndex = 0;
-
-    function changeBackground() {
-      const bgDiv = document.getElementById('bg');
-      bgDiv.style.backgroundImage = `url("${shuffledBackgrounds[currentBgIndex]}")`;
-      currentBgIndex = (currentBgIndex + 1) % shuffledBackgrounds.length;
-      if (currentBgIndex === 0) shuffledBackgrounds = shuffle([...backgrounds]);
-    }
-
     setInterval(updateClock, 1000);
     setInterval(updateWeather, 600000);
-    setInterval(changeBackground, 10000);
     updateClock();
     updateWeather();
-    changeBackground();
   </script>
 </body>
 </html>
