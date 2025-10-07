@@ -138,15 +138,25 @@
 
   <script>
     const schedule = [
+      { time: "13:34", destination: "Helmond 't Hout" },
       { time: "13:45", destination: "Helmond Station" },
+      { time: "14:34", destination: "Helmond 't Hout" },
       { time: "14:45", destination: "Helmond Station" },
+      { time: "15:04", destination: "Helmond 't Hout" },
       { time: "15:15", destination: "Helmond Station" },
-      { time: "15:40", destination: "Helmond 't Hout" },
-      { time: "16:10", destination: "Helmond 't Hout" },
+      { time: "15:34", destination: "Helmond 't Hout" },
+      { time: "15:45", destination: "Helmond Station" },
+      { time: "16:04", destination: "Helmond 't Hout" },
+      { time: "16:15", destination: "Helmond Station" },
+      { time: "16:34", destination: "Helmond 't Hout" },
       { time: "16:45", destination: "Helmond Station" },
-      { time: "17:10", destination: "Helmond 't Hout" },
+      { time: "17:04", destination: "Helmond 't Hout" },
+      { time: "17:15", destination: "Helmond Station" },
+      { time: "17:34", destination: "Helmond 't Hout" },
       { time: "17:45", destination: "Helmond Station" }
     ];
+
+    let countdownInterval = null;
 
     function showUpcomingBuses() {
       const now = new Date();
@@ -160,10 +170,7 @@
         const busTime = new Date(now);
         busTime.setHours(hour, minute, 0, 0);
 
-        const diffMs = busTime - now;
-        const diffMin = diffMs / 60000;
-
-        if (diffMin > 0 && diffMin <= 60) {
+        if (busTime > now && (busTime - now) <= 60 * 60000) {
           const row = document.createElement("tr");
           row.innerHTML = `<td>${entry.time}</td><td>${entry.destination}</td>`;
           busBody.appendChild(row);
@@ -179,29 +186,31 @@
         startCountdown(nextBusTime);
       } else {
         document.getElementById("countdown").textContent = "No buses in the next hour.";
+        clearInterval(countdownInterval);
       }
     }
 
     function startCountdown(busTime) {
-      function update() {
+      clearInterval(countdownInterval);
+
+      countdownInterval = setInterval(() => {
         const now = new Date();
         const diffMs = busTime - now;
-        const minutes = Math.floor(diffMs / 60000);
-        const seconds = Math.floor((diffMs % 60000) / 1000);
 
         if (diffMs > 0) {
+          const minutes = Math.floor(diffMs / 60000);
+          const seconds = Math.floor((diffMs % 60000) / 1000);
           document.getElementById("countdown").textContent =
             `Next bus in ${minutes} min ${seconds} sec`;
         } else {
           document.getElementById("countdown").textContent =
             `Next bus is departing now`;
+          showUpcomingBuses();
         }
-      }
-
-      update();
-      setInterval(update, 1000);
+      }, 1000);
     }
 
+    setInterval(showUpcomingBuses, 1000);
     showUpcomingBuses();
   </script>
 </body>
