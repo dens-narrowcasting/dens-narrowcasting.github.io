@@ -127,12 +127,10 @@
           <th>Destination</th>
         </tr>
       </thead>
-      <tbody id="bus-body">
-        <!-- Bus rows will be injected here -->
-      </tbody>
+      <tbody id="bus-body"></tbody>
     </table>
     <p class="disclaimer">
-      Please note: Departure times are based on a static schedule. Due to limitations with live data, actual bus times may vary.
+      Please note: Departure times are based on a static schedule. Actual bus times may vary.
     </p>
   </div>
 
@@ -167,63 +165,87 @@
     ];
 
     let countdownInterval = null;
+    let currentCountdownBus = null;
 
     function showUpcomingBuses() {
       const now = new Date();
       const busBody = document.getElementById("bus-body");
+      const countdown = document.getElementById("countdown");
       busBody.innerHTML = "";
 
-      let nextBusTime = null;
+      // get future buses
+      const upcoming = schedule
+        .map(entry => {
+          const [hour, minute] = entry.time.split(":").map(Number);
+          const busTime = new Date(now);
+          busTime.setHours(hour, minute, 0, 0);
+          return { ...entry, time: busTime };
+        })
+        .filter(entry => entry.time > now);
 
-      schedule.forEach(entry => {
-        const [hour, minute] = entry.time.split(":").map(Number);
-        const busTime = new Date(now);
-        busTime.setHours(hour, minute, 0, 0);
+      if (upcoming.length === 0) {
+        countdown.textContent = "No more buses for today.";
+        clearInterval(countdownInterval);
+        return;
+      }
 
-        if (busTime > now && (busTime - now) <= 60 * 60000) {
-          const row = document.createElement("tr");
-          row.innerHTML = `<td>${entry.time}</td><td>${entry.destination}</td>`;
-          busBody.appendChild(row);
-
-          if (!nextBusTime || busTime < nextBusTime) {
-            nextBusTime = busTime;
-            row.classList.add("next");
-          }
-        }
+      // show top 3
+      const nextThree = upcoming.slice(0, 3);
+      nextThree.forEach((bus, i) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${bus.time.getHours().toString().padStart(2,"0")}:${bus.time.getMinutes().toString().padStart(2,"0")}</td><td>${bus.destination}</td>`;
+        if (i === 0) row.classList.add("next");
+        busBody.appendChild(row);
       });
 
-      if (nextBusTime) {
-        startCountdown(nextBusTime);
+      const nextBus = nextThree[0];
+      const diffMs = nextBus.time - now;
+      const diffMin = diffMs / 60000;
+
+      // start countdown only once for the same bus
+      if (diffMin <= 15 && diffMin > 0) {
+        if (!currentCountdownBus || currentCountdownBus.getTime() !== nextBus.time.getTime()) {
+          startCountdown(nextBus.time);
+          currentCountdownBus = nextBus.time;
+        }
       } else {
-        document.getElementById("countdown").textContent = "No buses in the next hour.";
-        clearInterval(countdownInterval);
+        if (countdownInterval) {
+          clearInterval(countdownInterval);
+          countdownInterval = null;
+        }
+        const h = nextBus.time.getHours().toString().padStart(2, "0");
+        const m = nextBus.time.getMinutes().toString().padStart(2, "0");
+        countdown.textContent = `Next bus departs at ${h}:${m}`;
+        currentCountdownBus = null;
       }
     }
 
     function startCountdown(busTime) {
       clearInterval(countdownInterval);
+      const countdown = document.getElementById("countdown");
 
       countdownInterval = setInterval(() => {
         const now = new Date();
         const diffMs = busTime - now;
 
-        if (diffMs > 0) {
-          const minutes = Math.floor(diffMs / 60000);
-          const seconds = Math.floor((diffMs % 60000) / 1000);
-          document.getElementById("countdown").textContent =
-            `Next bus in ${minutes} min ${seconds} sec`;
-        } else {
-          document.getElementById("countdown").textContent =
-            `Next bus is departing now`;
+        if (diffMs <= 0) {
+          countdown.textContent = "The next bus is departing now";
+          clearInterval(countdownInterval);
+          countdownInterval = null;
+          currentCountdownBus = null;
           showUpcomingBuses();
+          return;
         }
+
+        const minutes = Math.floor(diffMs / 60000);
+        const seconds = Math.floor((diffMs % 60000) / 1000);
+        countdown.textContent = `The next bus is leaving in ${minutes} min ${seconds.toString().padStart(2, "0")} sec`;
       }, 1000);
     }
 
+    // Refresh bus list every second, but don't restart countdown unnecessarily
     setInterval(showUpcomingBuses, 1000);
     showUpcomingBuses();
   </script>
 </body>
 </html>
-
-
