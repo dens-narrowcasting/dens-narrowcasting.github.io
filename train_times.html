@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Train Departures – Helmond 't Hout</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      font-size: 1.2vw;
+    }
+
+    .image-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: url("https://dens-narrowcasting.github.io/dens_powerhub.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -1;
+      filter: brightness(0.8);
+    }
+
+    .logo {
+      position: absolute;
+      top: 2.5vh;
+      right: 2.5vw;
+      width: 23vw;
+      height: auto;
+      z-index: 1;
+    }
+
+    .train-section {
+      position: absolute;
+      top: 28vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(90vw, 1600px);
+      background: rgba(0, 0, 0, 0.55);
+      padding: 2vh 2vw;
+      border-radius: 1vw;
+      box-shadow: 0 0 2vw rgba(0, 0, 0, 0.4);
+    }
+
+    .train-section h2 {
+      margin-top: 0;
+      color: #fff;
+      text-align: center;
+      font-size: 2vw;
+    }
+
+    .train-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2vh;
+      border-radius: 1vw;
+      overflow: hidden;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .train-table th, .train-table td {
+      padding: 1.5vh 1vw;
+      border: 1px solid rgba(255,255,255,0.2);
+      text-align: center;
+      vertical-align: middle;
+      font-size: 1.5vw;
+    }
+
+    .train-table th {
+      background-color: #162a4d;
+      color: white;
+    }
+
+    .train-table td {
+      color: #fff;
+    }
+
+    .next {
+      background-color: rgba(255, 255, 255, 0.1);
+      font-weight: bold;
+    }
+
+    .last-warning {
+      color: #ffcc00;
+      font-weight: bold;
+      font-size: 1.2vw;
+      display: block;
+      margin-top: 0.3vh;
+    }
+
+    .countdown {
+      margin-top: 1vh;
+      text-align: center;
+      font-size: 1.5vw;
+      color: #fff;
+    }
+
+    .walk-note {
+      margin-top: 1vh;
+      text-align: center;
+      font-size: 1.2vw;
+      color: #ccc;
+    }
+
+    .disclaimer {
+      margin-top: 2vh;
+      font-size: 1.1vw;
+      text-align: center;
+      color: #ddd;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="image-bg"></div>
+  <img class="logo" src="https://www.dens.one/wp-content/uploads/2024/06/dens-logo-white.svg" alt="DENS Logo">
+
+  <div class="train-section">
+    <h2>Train Departures – Helmond 't Hout</h2>
+    <div class="countdown" id="countdown"></div>
+    <p class="walk-note">
+      It takes approximately 20 minutes to walk to Helmond 't Hout station from our building.
+    </p>
+    <table class="train-table" id="train-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Direction</th>
+        </tr>
+      </thead>
+      <tbody id="train-body">
+        <!-- Train rows will be injected here -->
+      </tbody>
+    </table>
+    <p class="disclaimer">
+      Note: Departure times are based on a static schedule. Actual train times may vary due to delays or disruptions.
+    </p>
+  </div>
+
+  <script>
+    const schedule = [];
+
+    for (let hour = 7; hour <= 21; hour++) {
+      const h = hour.toString().padStart(2, "0");
+      schedule.push({ time: `${h}:16`, destination: "Deurne" });
+      schedule.push({ time: `${h}:46`, destination: "Deurne" });
+      schedule.push({ time: `${h}:18`, destination: "Eindhoven (Boxtel)" });
+      schedule.push({ time: `${h}:48`, destination: "Eindhoven (Boxtel)" });
+    }
+
+    function showUpcomingTrains() {
+      if (window.countdownInterval) {
+        clearInterval(window.countdownInterval);
+      }
+
+      const now = new Date();
+      const trainBody = document.getElementById("train-body");
+      trainBody.innerHTML = "";
+
+      const lastTrains = {};
+      schedule.forEach(entry => {
+        lastTrains[entry.destination] = entry.time;
+      });
+
+      let trainsToShow = [];
+      let nextTrainTime = null;
+
+      schedule.forEach(entry => {
+        const [hour, minute] = entry.time.split(":").map(Number);
+        if (hour < 12) return;
+
+        const trainTime = new Date(now);
+        trainTime.setHours(hour, minute, 0, 0);
+
+        const diffMs = trainTime - now - 20 * 60 * 1000;
+
+        // Only show trains departing within the next hour
+        if (diffMs > 0 && diffMs <= 60 * 60 * 1000) {
+          trainsToShow.push({ ...entry, trainTime });
+        }
+      });
+
+      if (trainsToShow.length === 0) {
+        document.getElementById("countdown").textContent = "No trains within the next hour.";
+        return;
+      }
+
+      trainsToShow.slice(0, 5).forEach((entry, index) => {
+        const row = document.createElement("tr");
+
+        const isLastTrain = entry.time === lastTrains[entry.destination];
+        const warning = isLastTrain
+          ? `<span class="last-warning">⚠ Last train to ${entry.destination}</span>`
+          : "";
+
+        row.innerHTML = `<td>${entry.time}</td><td>${entry.destination}${warning}</td>`;
+        if (index === 0) {
+          row.classList.add("next");
+          nextTrainTime = entry.trainTime;
+        }
+        trainBody.appendChild(row);
+      });
+
+      if (nextTrainTime) {
+        startCountdown(nextTrainTime);
+      }
+    }
+
+    function startCountdown(trainTime) {
+      function update() {
+        const now = new Date();
+        const diffMs = trainTime - now - 20 * 60 * 1000;
+        const minutes = Math.floor(diffMs / 60000);
+        const seconds = Math.floor((diffMs % 60000) / 1000);
+
+        if (diffMs > 0) {
+          document.getElementById("countdown").textContent =
+            `Leave in ${minutes} min ${seconds} sec to catch the next train.`;
+        } else {
+          document.getElementById("countdown").textContent =
+            `You should be on your way now!`;
+        }
+      }
+
+      update();
+      window.countdownInterval = setInterval(update, 1000);
+    }
+
+    showUpcomingTrains();
+    setInterval(showUpcomingTrains, 60 * 1000);
+  </script>
+</body>
+</html>
