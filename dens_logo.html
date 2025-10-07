@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DENS Logo Centered</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #162a4d;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .logo {
+      width: 60vw;
+      max-width: 700px;
+      min-width: 200px;
+    }
+
+    @media (max-width: 600px) {
+      .logo {
+        width: 80vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <!-- Inline SVG mask to recolor the logo -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+      <defs>
+        <mask id="logo-mask">
+          <image href="https://www.dens.one/wp-content/uploads/2024/06/dens-logo-white.svg" width="100%" height="100%" />
+        </mask>
+      </defs>
+      <rect width="100%" height="100%" fill="#e5a46c" mask="url(#logo-mask)" />
+    </svg>
+  </div>
+</body>
+</html>
