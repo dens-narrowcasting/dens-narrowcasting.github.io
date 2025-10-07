@@ -12,7 +12,6 @@
       overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
       color: white;
-      font-size: 1.2vw;
     }
 
     .image-bg {
@@ -38,21 +37,26 @@
 
     .train-section {
       position: absolute;
-      top: 28vh;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      width: min(90vw, 1600px);
+      transform: translate(-50%, -50%);
+      width: 85vw;
+      max-width: 3000px;
+      min-width: 600px;
+      max-height: 85vh;
       background: rgba(0, 0, 0, 0.55);
-      padding: 2vh 2vw;
-      border-radius: 1vw;
+      padding: 2vh 3vw;
+      border-radius: 1.5vw;
       box-shadow: 0 0 2vw rgba(0, 0, 0, 0.4);
+      font-size: 1.4vw;
+      overflow-y: auto;
     }
 
     .train-section h2 {
       margin-top: 0;
       color: #fff;
       text-align: center;
-      font-size: 2vw;
+      font-size: 2.5vw;
     }
 
     .train-table {
@@ -66,7 +70,7 @@
     }
 
     .train-table th, .train-table td {
-      padding: 1.5vh 1vw;
+      padding: 2vh 1.5vw;
       border: 1px solid rgba(255,255,255,0.2);
       text-align: center;
       vertical-align: middle;
@@ -98,23 +102,62 @@
     .countdown {
       margin-top: 1vh;
       text-align: center;
-      font-size: 1.5vw;
+      font-size: 2vw;
       color: #fff;
     }
 
     .walk-note {
       margin-top: 1vh;
       text-align: center;
-      font-size: 1.2vw;
+      font-size: 1.3vw;
       color: #ccc;
     }
 
     .disclaimer {
       margin-top: 2vh;
-      font-size: 1.1vw;
+      font-size: 1.2vw;
       text-align: center;
       color: #ddd;
       font-style: italic;
+    }
+
+    /* Slightly shrink train-section on 1080p screens to give spacing from logo */
+    @media (max-width: 1920px) {
+      .train-section {
+        width: 80vw;
+        max-width: 1400px;
+        padding: 1.5vh 2vw;
+        font-size: 1.2vw;
+      }
+      .train-section h2 { font-size: 2vw; }
+      .train-table th, .train-table td { font-size: 1.2vw; }
+      .countdown { font-size: 1.6vw; }
+      .walk-note { font-size: 1vw; }
+      .disclaimer { font-size: 1vw; }
+    }
+
+    /* Scale down for ultra-wide / 2K+ screens */
+    @media (min-width: 2560px) {
+      .train-section {
+        width: 70vw;
+        max-width: 2400px;
+        padding: 1.5vh 2vw;
+        font-size: 1.2vw;
+      }
+      .train-section h2 { font-size: 2vw; }
+      .train-table th, .train-table td { font-size: 1.3vw; }
+      .countdown { font-size: 1.8vw; }
+      .walk-note { font-size: 1.1vw; }
+      .disclaimer { font-size: 1vw; }
+    }
+
+    @media (min-width: 3840px) {
+      .train-section { font-size: 1.1vw; }
+      .train-section h2 { font-size: 1.8vw; }
+      .train-table th, .train-table td { font-size: 1.1vw; }
+      .countdown { font-size: 1.5vw; }
+      .walk-note { font-size: 1vw; }
+      .disclaimer { font-size: 0.9vw; }
     }
   </style>
 </head>
@@ -133,11 +176,10 @@
         <tr>
           <th>Time</th>
           <th>Direction</th>
+          <th>Platform</th>
         </tr>
       </thead>
-      <tbody id="train-body">
-        <!-- Train rows will be injected here -->
-      </tbody>
+      <tbody id="train-body"></tbody>
     </table>
     <p class="disclaimer">
       Note: Departure times are based on a static schedule. Actual train times may vary due to delays or disruptions.
@@ -146,18 +188,21 @@
 
   <script>
     const schedule = [];
-
     for (let hour = 8; hour <= 21; hour++) {
       const h = hour.toString().padStart(2, "0");
-      schedule.push({ time: `${h}:16`, destination: "Deurne" });
-      schedule.push({ time: `${h}:46`, destination: "Deurne" });
-      schedule.push({ time: `${h}:18`, destination: "Eindhoven (Boxtel)" });
-      schedule.push({ time: `${h}:48`, destination: "Eindhoven (Boxtel)" });
+      schedule.push({ time: `${h}:16`, destination: "Deurne", platform: "2" });
+      schedule.push({ time: `${h}:46`, destination: "Deurne", platform: "2" });
+      schedule.push({ time: `${h}:18`, destination: "Eindhoven (Boxtel)", platform: "1" });
+      schedule.push({ time: `${h}:48`, destination: "Eindhoven (Boxtel)", platform: "1" });
     }
 
+    let countdownInterval = null;
+    let currentCountdownTrain = null;
+
     function showUpcomingTrains() {
-      if (window.countdownInterval) {
-        clearInterval(window.countdownInterval);
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
       }
 
       const now = new Date();
@@ -169,17 +214,15 @@
         lastTrains[entry.destination] = entry.time;
       });
 
-      let trainsToShow = [];
+      const trainsToShow = [];
       let nextTrainTime = null;
 
       schedule.forEach(entry => {
         const [hour, minute] = entry.time.split(":").map(Number);
-        if (hour < 8) return; // updated to include trains from 08:00
-
         const trainTime = new Date(now);
         trainTime.setHours(hour, minute, 0, 0);
 
-        const diffMs = trainTime - now - 20 * 60 * 1000;
+        const diffMs = trainTime - now - 20 * 60 * 1000; // leave 20 min to walk
 
         if (diffMs > 0 && diffMs <= 60 * 60 * 1000) {
           trainsToShow.push({ ...entry, trainTime });
@@ -199,7 +242,7 @@
           ? `<span class="last-warning">⚠ Last train to ${entry.destination}</span>`
           : "";
 
-        row.innerHTML = `<td>${entry.time}</td><td>${entry.destination}${warning}</td>`;
+        row.innerHTML = `<td>${entry.time}</td><td>${entry.destination}${warning}</td><td>${entry.platform}</td>`;
         if (index === 0) {
           row.classList.add("next");
           nextTrainTime = entry.trainTime;
@@ -221,19 +264,23 @@
 
         if (diffMs > 0) {
           document.getElementById("countdown").textContent =
-            `Leave in ${minutes} min ${seconds} sec to catch the next train.`;
+            `Leave in ${minutes} min ${seconds.toString().padStart(2,"0")} sec to catch the next train.`;
         } else {
           document.getElementById("countdown").textContent =
             `You should be on your way now!`;
+          clearInterval(countdownInterval);
+          countdownInterval = null;
+          showUpcomingTrains(); // auto-refresh table when train passed
         }
       }
 
       update();
-      window.countdownInterval = setInterval(update, 1000);
+      countdownInterval = setInterval(update, 1000); // update every second
     }
 
+    // Refresh table and countdown every second
+    setInterval(showUpcomingTrains, 1000);
     showUpcomingTrains();
-    setInterval(showUpcomingTrains, 60 * 1000);
   </script>
 </body>
 </html>
