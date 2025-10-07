@@ -12,7 +12,6 @@
       overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
       color: white;
-      font-size: 1.2vw;
     }
 
     .image-bg {
@@ -31,28 +30,33 @@
       position: absolute;
       top: 2.5vh;
       right: 2.5vw;
-      width: 23vw;
+      width: 23vw;      /* original size */
       height: auto;
       z-index: 1;
     }
 
     .bus-section {
       position: absolute;
-      top: 28vh;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      width: min(90vw, 1600px);
+      transform: translate(-50%, -50%);
+      width: 85vw;           /* responsive width */
+      max-width: 3000px;     
+      min-width: 600px;      
+      max-height: 85vh;      /* prevent overlapping logo and bottom */
       background: rgba(0, 0, 0, 0.55);
-      padding: 2vh 2vw;
-      border-radius: 1vw;
+      padding: 2vh 3vw;      
+      border-radius: 1.5vw;
       box-shadow: 0 0 2vw rgba(0, 0, 0, 0.4);
+      font-size: 1.4vw;      
+      overflow-y: auto;      
     }
 
     .bus-section h2 {
       margin-top: 0;
       color: #fff;
       text-align: center;
-      font-size: 2vw;
+      font-size: 2.5vw;
     }
 
     .bus-table {
@@ -61,12 +65,10 @@
       margin-top: 2vh;
       border-radius: 1vw;
       overflow: hidden;
-      margin-left: auto;
-      margin-right: auto;
     }
 
     .bus-table th, .bus-table td {
-      padding: 1.5vh 1vw;
+      padding: 2vh 1.5vw;
       border: 1px solid rgba(255,255,255,0.2);
       text-align: center;
       vertical-align: middle;
@@ -87,34 +89,59 @@
       font-weight: bold;
     }
 
-    .countdown {
-      margin-top: 1vh;
-      text-align: center;
-      font-size: 1.5vw;
-      color: #fff;
-    }
-
     .last-bus-warning-row td {
       text-align: center;
-      font-size: 1.2vw;
+      font-size: 1.4vw;
       color: #ff6666;
       font-weight: bold;
       background-color: rgba(255, 0, 0, 0.1);
     }
 
+    .countdown {
+      margin-top: 1vh;
+      text-align: center;
+      font-size: 2vw;
+      color: #fff;
+    }
+
     .walk-note {
       margin-top: 1vh;
       text-align: center;
-      font-size: 1.2vw;
+      font-size: 1.3vw;
       color: #ccc;
     }
 
     .disclaimer {
       margin-top: 2vh;
-      font-size: 1.1vw;
+      font-size: 1.2vw;
       text-align: center;
       color: #ddd;
       font-style: italic;
+    }
+
+    /* Scale for extremely large screens to avoid crowding logo */
+    @media (min-width: 2560px) {
+      .bus-section {
+        width: 70vw;
+        max-width: 2400px;
+        padding: 1.5vh 2vw;
+        font-size: 1.2vw;
+      }
+      .bus-section h2 { font-size: 2vw; }
+      .bus-table th, .bus-table td { font-size: 1.3vw; }
+      .countdown { font-size: 1.8vw; }
+      .walk-note { font-size: 1.1vw; }
+      .disclaimer { font-size: 1vw; }
+    }
+
+    /* Optional: scale smoothly on ultra-ultra-wide screens (4K+) */
+    @media (min-width: 3840px) {
+      .bus-section { font-size: 1.1vw; }
+      .bus-section h2 { font-size: 1.8vw; }
+      .bus-table th, .bus-table td { font-size: 1.1vw; }
+      .countdown { font-size: 1.5vw; }
+      .walk-note { font-size: 1vw; }
+      .disclaimer { font-size: 0.9vw; }
     }
   </style>
 </head>
@@ -146,30 +173,12 @@
     const schedule = [
       { time: "07:44", destination: "Helmond 't Hout" },
       { time: "07:55", destination: "Helmond Station" },
-      { time: "08:14", destination: "Helmond 't Hout" },
-      { time: "08:25", destination: "Helmond Station" },
-      { time: "08:44", destination: "Helmond 't Hout" },
-      { time: "08:55", destination: "Helmond Station" },
-      { time: "09:14", destination: "Helmond 't Hout" },
-      { time: "09:25", destination: "Helmond Station" },
-      { time: "09:44", destination: "Helmond 't Hout" },
-      { time: "09:55", destination: "Helmond Station" },
+      { time: "12:05", destination: "Helmond Station" },
       { time: "13:34", destination: "Helmond 't Hout" },
       { time: "13:45", destination: "Helmond Station" },
-      { time: "14:34", destination: "Helmond 't Hout" },
-      { time: "14:45", destination: "Helmond Station" },
-      { time: "15:04", destination: "Helmond 't Hout" },
       { time: "15:15", destination: "Helmond Station" },
-      { time: "15:34", destination: "Helmond 't Hout" },
-      { time: "15:45", destination: "Helmond Station" },
-      { time: "16:04", destination: "Helmond 't Hout" },
-      { time: "16:15", destination: "Helmond Station" },
-      { time: "16:34", destination: "Helmond 't Hout" },
-      { time: "16:45", destination: "Helmond Station" },
-      { time: "17:04", destination: "Helmond 't Hout" },
-      { time: "17:15", destination: "Helmond Station" },
-      { time: "17:34", destination: "Helmond 't Hout" },
-      { time: "17:45", destination: "Helmond Station" }
+      { time: "17:45", destination: "Helmond Station" },
+      { time: "17:34", destination: "Helmond 't Hout" }
     ];
 
     let countdownInterval = null;
@@ -205,7 +214,7 @@
         if (i === 0) row.classList.add("next");
         busBody.appendChild(row);
 
-        // Check if this bus is the last for its destination
+        // Add last-bus warning row directly below if this is last in its direction
         const remainingInDest = upcoming.filter(b => b.destination === bus.destination);
         if (remainingInDest.length === 1) {
           const warningRow = document.createElement("tr");
@@ -215,7 +224,6 @@
         }
       });
 
-      // Countdown for the very next bus
       const nextBus = nextThree[0];
       const diffMs = nextBus.time - now;
       const diffMin = diffMs / 60000;
@@ -226,10 +234,7 @@
           currentCountdownBus = nextBus.time;
         }
       } else if (diffMin > 0) {
-        if (countdownInterval) {
-          clearInterval(countdownInterval);
-          countdownInterval = null;
-        }
+        if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
         const h = nextBus.time.getHours().toString().padStart(2, "0");
         const m = nextBus.time.getMinutes().toString().padStart(2, "0");
         countdown.textContent = `Next bus departs at ${h}:${m}`;
