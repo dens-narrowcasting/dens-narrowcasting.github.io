@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Background with Logo</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .image-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: url("https://dens-narrowcasting.github.io/Dens_Porsche.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -1;
+      filter: brightness(0.8);
+    }
+
+    .logo {
+      position: absolute;
+      top: 2.5vh;
+      right: 2.5vw;
+      width: 23vw;
+      height: auto;
+      z-index: 1;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="image-bg"></div>
+  <img class="logo" src="https://www.dens.one/wp-content/uploads/2024/06/dens-logo-white.svg" alt="DENS Logo">
+</body>
+</html>
